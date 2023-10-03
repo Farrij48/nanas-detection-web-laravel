@@ -400,12 +400,14 @@
                         </div>
 
                         <div class="tab-pane fade" id="nav-ContactMap" role="tabpanel" aria-labelledby="nav-ContactMap-tab">
-                            <div class="row text-center alignment-center">
+                            <div class="text-center alignment-center">
+                                <button class="btn custom-btn mb-3" id="toggle-button">Toggle Live Detection</button>
                                 {{-- <div id="reader" width="600px"></div> --}}
-                                <div id="video-container">
-                                    <iframe src="http://localhost:5000/live_detection" frameborder="0" width="100%" height="500"></iframe>
 
+                                <div class="alignment-center text-center">
+                                    <iframe id="live-detection-frame" src="" frameborder="0" width="100%" height="500"></iframe>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -512,44 +514,23 @@
 @endsection
 
 @section('script')
-{{-- <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <script>
-    function onScanSuccess(decodedText, decodedResult) {
+    const frame = document.getElementById('live-detection-frame');
+    const toggleButton = document.getElementById('toggle-button');
+    let isLiveDetectionActive = false;
 
-    }
-    var html5QrcodeScanner = new Html5QrcodeScanner(
-        "reader", {
-            fps: 10
-            , qrbox: 250
-        });
-    html5QrcodeScanner.render(onScanSuccess);
-
-</script> --}}
-{{-- <script>
-    const video = document.getElementById('live-video');
-
-    // Fungsi untuk memuat video dari Flask server
-    function loadLiveVideo() {
-        fetch('http://localhost:5000/live_detection')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.blob();
-            })
-            .then(blob => {
-                const objectURL = URL.createObjectURL(blob);
-                video.src = objectURL;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+    function toggleLiveDetection() {
+        if (isLiveDetectionActive) {
+            frame.src = ''; // Mematikan live detection
+        } else {
+            frame.src = 'http://localhost:5000/live_detection'; // Mengaktifkan live detection
+        }
+        isLiveDetectionActive = !isLiveDetectionActive;
     }
 
-    // Panggil fungsi untuk memuat video
-    loadLiveVideo();
+    toggleButton.addEventListener('click', toggleLiveDetection);
 
-</script> --}}
+</script>
 
 @endsection
 
