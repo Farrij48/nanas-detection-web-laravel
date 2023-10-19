@@ -364,7 +364,7 @@
                             <br>
 
                             <div class="text-center alignment-center">
-                                @if($hasil == 'NANAS_MATANG')
+                                @if($hasil == 'nanas_matang')
                                 <div class="alert alert-success alert-dismissible fade show">
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
                                     </button>
@@ -373,7 +373,7 @@
                                     <li>Buah Nanas Matang</li>
                                 </div>
 
-                                @elseif ($hasil == 'NANAS_MENTAH')
+                                @elseif ($hasil == 'nanas_mentah')
                                 <div class="alert alert-danger alert-dismissible fade show">
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
                                     </button>
@@ -401,11 +401,14 @@
 
                         <div class="tab-pane fade" id="nav-ContactMap" role="tabpanel" aria-labelledby="nav-ContactMap-tab">
                             <div class="text-center alignment-center">
-                                <button class="btn custom-btn mb-3" id="toggle-button">Toggle Live Detection</button>
+                                <button class="btn custom-btn mb-3" id="toggleButton">Toggle Live Detection</button>
                                 {{-- <div id="reader" width="600px"></div> --}}
 
                                 <div class="alignment-center text-center">
-                                    <iframe id="live-detection-frame" src="" frameborder="0" width="100%" height="500"></iframe>
+                                    {{-- <iframe id="live-detection-frame" src="" frameborder="0" width="100%" height="500"></iframe> --}}
+                                    <video id="video" width="640" height="480" autoplay></video>
+                                    <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+                                    <div class="result" id="result"></div>
                                 </div>
 
                             </div>
@@ -514,21 +517,80 @@
 @endsection
 
 @section('script')
-<script>
-    const frame = document.getElementById('live-detection-frame');
-    const toggleButton = document.getElementById('toggle-button');
-    let isLiveDetectionActive = false;
 
-    function toggleLiveDetection() {
-        if (isLiveDetectionActive) {
-            frame.src = ''; // Mematikan live detection
-        } else {
-            frame.src = 'http://localhost:5000/live_detection'; // Mengaktifkan live detection
-        }
-        isLiveDetectionActive = !isLiveDetectionActive;
+<script>
+    // const frame = document.getElementById('live-detection-frame');
+    // const toggleButton = document.getElementById('toggle-button');
+    // let isLiveDetectionActive = false;
+
+    // function toggleLiveDetection() {
+    //     if (isLiveDetectionActive) {
+    //         frame.src = ''; // Mematikan live detection
+    //     } else {
+    //         frame.src = 'http://localhost:5000/live_detection'; // Mengaktifkan live detection
+    //     }
+    //     isLiveDetectionActive = !isLiveDetectionActive;
+    // }
+
+    // toggleButton.addEventListener('click', toggleLiveDetection);
+
+</script>
+<script>
+    const videoElement = document.getElementById('video');
+    const canvasElement = document.getElementById('canvas');
+    const canvasContext = canvasElement.getContext('2d');
+    const resultElement = document.getElementById('result');
+
+    navigator.mediaDevices.getUserMedia({
+            video: true
+        })
+        .then(function(stream) {
+            videoElement.srcObject = stream;
+        })
+        .catch(function(error) {
+            console.error('Error accessing the camera: ', error);
+        });
+
+    function captureAndSendFrame() {
+        canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+        const imageData = canvasContext.getImageData(0, 0, canvasElement.width, canvasElement.height);
+        const data = new FormData();
+        data.append('image', dataURItoBlob(canvasElement.toDataURL()));
+
+        fetch('http://localhost:5000/detect_and_predict', {
+                method: 'POST'
+                , body: data
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Menampilkan hasil deteksi objek pada halaman web
+                const detectedObjects = data.prediction;
+                if (detectedObjects) {
+                    let resultText = data.prediction;
+                    resultElement.innerText = resultText; // Menghapus koma terakhir
+                } else {
+                    resultElement.innerText = 'Tidak ada objek terdeteksi.';
+                }
+            })
+            .catch(error => {
+                console.error('Error sending frame to API: ', error);
+            });
     }
 
-    toggleButton.addEventListener('click', toggleLiveDetection);
+    function dataURItoBlob(dataURI) {
+        const byteString = atob(dataURI.split(',')[1]);
+        const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([ab], {
+            type: mimeString
+        });
+    }
+
+    setInterval(captureAndSendFrame, 1000);
 
 </script>
 

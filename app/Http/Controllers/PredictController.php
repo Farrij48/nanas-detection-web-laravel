@@ -46,25 +46,32 @@ class PredictController extends Controller
             'image',
             file_get_contents(public_path('images/buah/') . $image_name),
             $image_name
-        )->post('http://localhost:5000/detect');
+        )->post('http://localhost:5000/detect_and_predict');
 
         $data = json_decode($response->body(), true);
 
-        $detected_objects = $data['detected_objects'];
-
-        if (count($detected_objects) == 0) {
-            return view('landing.pages.index', [
-                'hasil' => 'tidak_diketahui',
-                'gambar' => $image_name,
-            ]);
-        }
-
-        $detected_object = $detected_objects[0];
-        $class = $detected_object['class'];
+        $hasil = $data['prediction'];
 
         return view('landing.pages.index', [
-            'hasil' => $class,
+            'hasil' => $hasil,
             'gambar' => $image_name,
         ]);
+
+        // $detected_objects = $data['detected_objects'];
+
+        // if (count($detected_objects) == 0) {
+        //     return view('landing.pages.index', [
+        //         'hasil' => 'tidak_diketahui',
+        //         'gambar' => $image_name,
+        //     ]);
+        // }
+
+        // $detected_object = $detected_objects[0];
+        // $class = $detected_object['class'];
+
+        // return view('landing.pages.index', [
+        //     'hasil' => $class,
+        //     'gambar' => $image_name,
+        // ]);
     }
 }
