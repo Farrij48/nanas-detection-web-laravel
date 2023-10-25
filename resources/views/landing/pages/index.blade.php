@@ -319,104 +319,69 @@
         </div>
     </section> --}}
 
+
+
+
     <section class="contact-section section-padding" id="section_4">
         <div class="container">
             <div class="row">
-
                 <div class="col-lg-8 col-12 mx-auto">
                     <h2 class="text-center mb-4">Choose Your Types</h2>
-
                     <nav class="d-flex justify-content-center">
                         <div class="nav nav-tabs align-items-baseline justify-content-center" id="nav-tab" role="tablist">
                             <button class="nav-link active" id="nav-ContactForm-tab" data-bs-toggle="tab" data-bs-target="#nav-ContactForm" type="button" role="tab" aria-controls="nav-ContactForm" aria-selected="false" tabindex="-1">
                                 <h5>Upload Image</h5>
                             </button>
-
                             <button class="nav-link" id="nav-ContactMap-tab" data-bs-toggle="tab" data-bs-target="#nav-ContactMap" type="button" role="tab" aria-controls="nav-ContactMap" aria-selected="true">
-                                <h5>Camera Scanner</h5>
+                                <h5>Camera</h5>
                             </button>
                         </div>
                     </nav>
-
                     <div class="tab-content shadow-lg mt-5" id="nav-tabContent">
+                        <div class="tab-pane fade" id="nav-ContactMap" role="tabpanel" aria-labelledby="nav-ContactMap-tab">
+                            <div class="text-center alignment-center">
+                                <button class="btn custom-btn mb-3" id="toggleButton">Toggle Live Detection</button>
+                                <div class="alignment-center text-center">
+                                    <video id="video" class="img-fluid" autoplay></video>
+                                    <canvas id="canvas" class="img-fluid" style="display: none;"></canvas>
+                                    <div class="result mt-3" id="result"></div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="tab-pane fade active show" id="nav-ContactForm" role="tabpanel" aria-labelledby="nav-ContactForm-tab">
 
                             <div class="pricing-thumb">
                                 <div class="text-center">
                                     <div>
                                         <h3>Fruit Detection</h3>
-                                        {{-- <p>Including good things:</p> --}}
                                     </div>
                                 </div>
                                 <ul class="mt-4">
-                                    <li class="pricing-list-item">Melakukan prosesing image buah yang diupload, kemudian melakukan klasifikasi apakah buah tersebut matang atau tidak matang</li>
+                                    <li class="pricing-list-item">Melakukan prosesing image buah yang diupload,
+                                        kemudian melakukan klasifikasi apakah buah tersebut matang atau tidak
+                                        matang</li>
                                 </ul>
-
                                 <div class="text-center">
-                                    <button class="btn custom-btn" data-toggle="modal" data-target="#modalorder"><span>Upload Image</span>
-                                    </button>
+                                    <form id="predictForm" enctype="multipart/form-data">
+                                        @csrf
+                                        <label class="btn custom-btn" onclick="document.getElementById('fileInput').click();">
+                                            <span>Upload Image</span>
+                                        </label>
+                                        <input type="file" id="fileInput" name="image" style="display:none" />
+                                    </form>
                                 </div>
-
-
-                            </div>
-
-                            <br>
-                            <br>
-
-                            <div class="text-center alignment-center">
-                                @if($hasil == 'nanas_matang')
-                                <div class="alert alert-success alert-dismissible fade show">
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
-                                    </button>
-                                    <img height="150px" width="150px" src="{{ asset('images/buah/' . $gambar) }}" alt="">
-                                    <br><br>
-                                    <li>Buah Nanas Matang</li>
-                                </div>
-
-                                @elseif ($hasil == 'nanas_mentah')
-                                <div class="alert alert-danger alert-dismissible fade show">
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
-                                    </button>
-                                    <img height="150px" width="150px" src="{{ asset('images/buah/' . $gambar) }}" alt="">
-                                    <br><br>
-                                    <li>Buah Nanas Mentah</li>
-                                </div>
-
-                                @elseif($hasil == 'tidak_diketahui')
-                                <div class="alert alert-warning alert-dismissible fade show">
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
-                                    </button>
-                                    <img height="150px" width="150px" src="{{ asset('images/buah/' . $gambar) }}" alt="">
-                                    <br><br>
-                                    <li>Gambar Yang Anda Upload Tidak Dikenali Oleh System Kita</li>
-                                </div>
-                                @else
-
-                                @endif
-                            </div>
-
-
-
-                        </div>
-
-                        <div class="tab-pane fade" id="nav-ContactMap" role="tabpanel" aria-labelledby="nav-ContactMap-tab">
-                            <div class="text-center alignment-center">
-                                <button class="btn custom-btn mb-3" id="toggleButton">Toggle Live Detection</button>
-                                {{-- <div id="reader" width="600px"></div> --}}
-
-                                <div class="alignment-center text-center">
-                                    {{-- <iframe id="live-detection-frame" src="" frameborder="0" width="100%" height="500"></iframe> --}}
-                                    <video id="video" width="640" height="480" autoplay></video>
-                                    <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
-                                    <div class="result" id="result"></div>
-                                </div>
-
                             </div>
                         </div>
+                        <br><br>
+                        <div class="text-center">
+                            <div class="result mt-3" id="result2"></div>
+                        </div>
+
                     </div>
-
                 </div>
             </div>
+        </div>
+              
     </section>
 
     {{-- Modal --}}
@@ -476,80 +441,103 @@
                             @endforeach
                         </div>
                         @endif
-                        <form class="custom-form ticket-form" action="/" method="post" enctype="multipart/form-data">
+                        {{-- <form id="predictForm" class="custom-form ticket-form" enctype="multipart/form-data">
                             @csrf
-
                             <div class="ticket-form-body">
-                                {{-- <h6>Fill The Form</h6> --}}
-                                {{-- <div class="row">
-                                    <div class="col-lg-6 col-md-6 col-12">
-                                        <input type="text" name="name" value="{{ Session::get('dname') }}" id="ticket-form-name" class="form-control" placeholder="Full name" required>
+                                <h6>Upload Image</h6>
+
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-12">
+                                        <input type="file" name="image" id="image" class="form-control" placeholder="Upload Image" required>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="text-center">
+                                        <button id="predictButton" class="custom-btn">Check</button>
+                                    </div>
+                                </div>
                             </div>
-
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <input type="email" name="email" value="{{ Session::get('demail') }}" id="ticket-form-email" class="form-control" placeholder="Email address" required>
-                            </div>
-                    </div> --}}
-
-                    <h6>Upload Image</h6>
-
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-12">
-                            <input type="file" name="image" id="ticket-form-image" class="form-control" placeholder="Upload Image" required>
-                        </div>
-                    </div>
-
-
-                    <div class="row">
-                        <div class="col-lg-4 col-md-10 col-8 mx-auto">
-                            <button type="submit" class="form-control">Check</button>
-                        </div>
+                        </form> --}}
                     </div>
                 </div>
-                </form>
             </div>
         </div>
-    </div>
-    </div>
     </div>
 
 </main>
 @endsection
 
 @section('script')
-
 <script>
-    // const frame = document.getElementById('live-detection-frame');
-    // const toggleButton = document.getElementById('toggle-button');
-    // let isLiveDetectionActive = false;
+    const videoElement = document.getElementById('video');
+    const canvasElement = document.getElementById('canvas');
+    const canvasContext = canvasElement.getContext('2d');
+    const resultElement = document.getElementById('result');
+    const toggleButton = document.getElementById('toggleButton');
+
+    let isLiveDetectionActive = false;
+    let mediaStream = null; // Menyimpan objek mediaStream untuk digunakan saat perlu berhenti
+    resultElement.style.display = 'none';
+
+    async function toggleLiveDetection() {
+        try {
+            if (isLiveDetectionActive) {
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(track => track.stop()); // Menghentikan semua track video
+                }
+                videoElement.srcObject = null; // Menghentikan tampilan video
+
+                // menyembunyikan canvas dan result
+                resultElement.style.display = 'none';
+
+
+            } else {
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: true
+                });
+                videoElement.srcObject = mediaStream;
+
+                // menampilkan canvas dan result
+                resultElement.style.display = 'block';
+
+            }
+            isLiveDetectionActive = !isLiveDetectionActive;
+        } catch (error) {
+            console.error('Error accessing the camera: ', error);
+        }
+    }
+
+    toggleButton.addEventListener('click', toggleLiveDetection);
 
     // function toggleLiveDetection() {
     //     if (isLiveDetectionActive) {
-    //         frame.src = ''; // Mematikan live detection
+    //         navigator.mediaDevices.getUserMedia({
+    //                 video: false
+    //             })
+    //             .then(function(stream) {
+    //                 videoElement.srcObject = stream;
+    //             })
+    //             .catch(function(error) {
+    //                 console.error('Error accessing the camera: ', error);
+    //             });
     //     } else {
-    //         frame.src = 'http://localhost:5000/live_detection'; // Mengaktifkan live detection
+    //         navigator.mediaDevices.getUserMedia({
+    //                 video: true
+    //             })
+    //             .then(function(stream) {
+    //                 videoElement.srcObject = stream;
+    //             })
+    //             .catch(function(error) {
+    //                 console.error('Error accessing the camera: ', error);
+    //             });
     //     }
     //     isLiveDetectionActive = !isLiveDetectionActive;
     // }
 
     // toggleButton.addEventListener('click', toggleLiveDetection);
 
-</script>
-<script>
-    const videoElement = document.getElementById('video');
-    const canvasElement = document.getElementById('canvas');
-    const canvasContext = canvasElement.getContext('2d');
-    const resultElement = document.getElementById('result');
-
-    navigator.mediaDevices.getUserMedia({
-            video: true
-        })
-        .then(function(stream) {
-            videoElement.srcObject = stream;
-        })
-        .catch(function(error) {
-            console.error('Error accessing the camera: ', error);
-        });
 
     function captureAndSendFrame() {
         canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
@@ -557,20 +545,24 @@
         const data = new FormData();
         data.append('image', dataURItoBlob(canvasElement.toDataURL()));
 
-        fetch('http://localhost:5000/detect_and_predict', {
+        fetch('http://localhost:5000/predict', {
                 method: 'POST'
                 , body: data
             })
             .then(response => response.json())
             .then(data => {
                 // Menampilkan hasil deteksi objek pada halaman web
-                const detectedObjects = data.prediction;
-                if (detectedObjects) {
-                    let resultText = data.prediction;
-                    resultElement.innerText = resultText; // Menghapus koma terakhir
+                // let resultText = data.prediction;
+                // resultElement.innerText = resultText;
+
+                if (data.prediction == 'nanas_matang') {
+                    resultElement.innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Buah Nanas Matang</div>';
+                } else if (data.prediction == 'nanas_mentah') {
+                    resultElement.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Buah Nanas Mentah</div>';
                 } else {
-                    resultElement.innerText = 'Tidak ada objek terdeteksi.';
+                    resultElement.innerHTML = '<div class="alert alert-warning alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Tidak Ada Object Terdeteksi </div>';
                 }
+
             })
             .catch(error => {
                 console.error('Error sending frame to API: ', error);
@@ -593,6 +585,64 @@
     setInterval(captureAndSendFrame, 1000);
 
 </script>
+
+<script>
+    $(document).ready(function() {
+        $('#fileInput').on('change', function() {
+            var formData = new FormData($('#predictForm')[0]);
+
+            $.ajax({
+                type: 'POST'
+                , url: '/'
+                , data: formData
+                , contentType: false
+                , processData: false
+                , success: function(response) {
+                    var hasil = response.hasil;
+                    var gambar = response.gambar;
+                    var resultDiv = $('#result2');
+
+                    // Clear previous results
+                    resultDiv.empty();
+
+                    if (hasil === 'nanas_matang') {
+                        resultDiv.append(`
+                            <div class="alert alert-success alert-dismissible fade show">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                <img height="150px" width="150px" src="{{ asset('images/buah/') }}/${gambar}" alt="">
+                                <br><br>
+                                <li>Gambar Yang Anda Upload Merupakan Buah Nanas Matang</li>
+                            </div>
+                        `);
+                    } else if (hasil === 'nanas_mentah') {
+                        resultDiv.append(`
+                            <div class="alert alert-warning alert-dismissible fade show">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                <img height="150px" width="150px" src="{{ asset('images/buah/') }}/${gambar}" alt="">
+                                <br><br>
+                                <li>Gambar Yang Anda Upload Merupakan Buah Nanas Mentah</li>
+                            </div>
+                        `);
+                    } else if (hasil === 'tidak_diketahui') {
+                        resultDiv.append(`
+                            <div class="alert alert-danger alert-dismissible fade show">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                <img height="150px" width="150px" src="{{ asset('images/buah/') }}/${gambar}" alt="">
+                                <br><br>
+                                <li>Gambar Yang Anda Upload Bukan Buah Nanas</li>
+                            </div>
+                        `);
+                    }
+                }
+                , error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+
+</script>
+
 
 @endsection
 

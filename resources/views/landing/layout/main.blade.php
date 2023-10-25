@@ -59,13 +59,14 @@ T e m p l a t e M o
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
     </script>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('landing/js/8057-js-jquery.min.js') }}"></script>
     <script src="{{ asset('landing/js/4385-js-bootstrap.min.js') }}"></script>
     <script src="{{ asset('landing/js/3411-js-jquery.sticky.js') }}"></script>
     <script src="{{ asset('landing/js/4088-js-click-scroll.js') }}"></script>
     <script src="{{ asset('landing/js/9062-js-custom.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
     @yield('script')
 

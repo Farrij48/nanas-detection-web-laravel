@@ -14,9 +14,11 @@ class PredictController extends Controller
     {
         $hasil = '';
         $gambar = '';
+        $anjay = '';
         return view('landing.pages.index', [
             'hasil' => $hasil,
             'gambar' => $gambar,
+            'anjay' => $anjay,
         ]);
     }
 
@@ -46,32 +48,18 @@ class PredictController extends Controller
             'image',
             file_get_contents(public_path('images/buah/') . $image_name),
             $image_name
-        )->post('http://localhost:5000/detect_and_predict');
+        )->post('http://localhost:5000/predict');
 
         $data = json_decode($response->body(), true);
 
         $hasil = $data['prediction'];
 
-        return view('landing.pages.index', [
-            'hasil' => $hasil,
-            'gambar' => $image_name,
-        ]);
-
-        // $detected_objects = $data['detected_objects'];
-
-        // if (count($detected_objects) == 0) {
-        //     return view('landing.pages.index', [
-        //         'hasil' => 'tidak_diketahui',
-        //         'gambar' => $image_name,
-        //     ]);
-        // }
-
-        // $detected_object = $detected_objects[0];
-        // $class = $detected_object['class'];
-
         // return view('landing.pages.index', [
-        //     'hasil' => $class,
+        //     'hasil' => $hasil,
         //     'gambar' => $image_name,
         // ]);
+        return response()->json(['hasil' => $hasil, 'gambar' => $image_name]);
     }
+
+
 }
