@@ -330,7 +330,7 @@
                     <nav class="d-flex justify-content-center">
                         <div class="nav nav-tabs align-items-baseline justify-content-center" id="nav-tab" role="tablist">
                             <button class="nav-link active" id="nav-ContactForm-tab" data-bs-toggle="tab" data-bs-target="#nav-ContactForm" type="button" role="tab" aria-controls="nav-ContactForm" aria-selected="false" tabindex="-1">
-                                <h5>Upload Image</h5>
+                                <h5>Image</h5>
                             </button>
                             <button class="nav-link" id="nav-ContactMap-tab" data-bs-toggle="tab" data-bs-target="#nav-ContactMap" type="button" role="tab" aria-controls="nav-ContactMap" aria-selected="true">
                                 <h5>Camera</h5>
@@ -365,18 +365,18 @@
                                     <form id="predictForm" enctype="multipart/form-data">
                                         @csrf
                                         <label class="btn custom-btn" onclick="document.getElementById('fileInput').click();">
-                                            <span>Upload Image</span>
+                                            <span>Upload</span>
                                         </label>
                                         <input type="file" id="fileInput" name="image" style="display:none" />
                                     </form>
                                 </div>
                             </div>
-                        </div>
-                        <br><br>
-                        <div class="text-center">
-                            <div class="result mt-3" id="result2"></div>
-                        </div>
 
+                            <br><br>
+                            <div class="text-center">
+                                <div class="result mt-3" id="result2"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
