@@ -221,7 +221,7 @@
         </div>
     </section>
 
-    <section class="schedule-section section-padding" id="section_3">
+    {{-- <section class="schedule-section section-padding" id="section_3">
         <div class="container d-flex justify-content-center align-items-center">
             <div class="row">
 
@@ -306,6 +306,70 @@
             </div>
         </div>
 
+    </section> --}}
+    <section class="schedule-section section-padding" id="section_3">
+        <div class="container d-flex justify-content-center align-items-center">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white mb-4">Steps By Step E-Smart Detection
+                        <div class="table-responsive mt-4">
+                            <table class="schedule-table table table-dark">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Step</th>
+                                        <th scope="col">Job</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">
+                                            <h3>1</h3>
+                                        </th>
+                                        <td>
+                                            <h3>Pastikan foto telah disediakan</h3>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            <h3>2</h3>
+                                        </th>
+                                        <td>
+                                            <h3>Pilih Button Upload untuk Memilih Gambar
+                                            </h3>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            <h3>3</h3>
+                                        </th>
+                                        <td>
+                                            <h3>Pilih Foto yang Sesuai</h3>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            <h3>4</h3>
+                                        </th>
+                                        <td>
+                                            <h3>Proses Check Kematangan Buah Nanas</h3>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            <h3>5</h3>
+                                        </th>
+                                        <td>
+                                            <h3>Hasil Pemeriksaan Kematangan Buah Nanas</h3>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </h2>
+                </div>
+            </div>
+        </div>
+              
     </section>
 
 
@@ -351,30 +415,32 @@
                         <div class="tab-pane fade active show" id="nav-ContactForm" role="tabpanel" aria-labelledby="nav-ContactForm-tab">
 
                             <div class="pricing-thumb">
-                                <div class="text-center">
-                                    <div>
-                                        <h3>Fruit Detection</h3>
+                                <form id="predictForm" enctype="multipart/form-data">
+                                    <div class="text-center">
+                                        <div>
+                                            <h3>Fruit Detection</h3>
+                                        </div>
                                     </div>
-                                </div>
-                                <ul class="mt-4">
-                                    <li class="pricing-list-item">Melakukan prosesing image buah yang diupload,
-                                        kemudian melakukan klasifikasi apakah buah tersebut matang atau tidak
-                                        matang</li>
-                                </ul>
-                                <div class="text-center">
-                                    <form id="predictForm" enctype="multipart/form-data">
+                                    <ul class="mt-4">
+                                        <li class="pricing-list-item">Melakukan prosesing image buah yang diupload,
+                                            kemudian melakukan klasifikasi apakah buah tersebut matang atau tidak
+                                            matang</li>
+                                    </ul>
+                                    <div class="text-center">
+
                                         @csrf
                                         <label class="btn custom-btn" onclick="document.getElementById('fileInput').click();">
                                             <span>Upload</span>
                                         </label>
                                         <input type="file" id="fileInput" name="image" style="display:none" />
-                                    </form>
-                                </div>
-                            </div>
 
-                            <br><br>
-                            <div class="text-center">
-                                <div class="result mt-3" id="result2"></div>
+                                    </div>
+                                </form>
+
+                                <div class="text-center">
+                                    <div id="result2"></div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -511,33 +577,6 @@
 
     toggleButton.addEventListener('click', toggleLiveDetection);
 
-    // function toggleLiveDetection() {
-    //     if (isLiveDetectionActive) {
-    //         navigator.mediaDevices.getUserMedia({
-    //                 video: false
-    //             })
-    //             .then(function(stream) {
-    //                 videoElement.srcObject = stream;
-    //             })
-    //             .catch(function(error) {
-    //                 console.error('Error accessing the camera: ', error);
-    //             });
-    //     } else {
-    //         navigator.mediaDevices.getUserMedia({
-    //                 video: true
-    //             })
-    //             .then(function(stream) {
-    //                 videoElement.srcObject = stream;
-    //             })
-    //             .catch(function(error) {
-    //                 console.error('Error accessing the camera: ', error);
-    //             });
-    //     }
-    //     isLiveDetectionActive = !isLiveDetectionActive;
-    // }
-
-    // toggleButton.addEventListener('click', toggleLiveDetection);
-
 
     function captureAndSendFrame() {
         canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
@@ -551,9 +590,6 @@
             })
             .then(response => response.json())
             .then(data => {
-                // Menampilkan hasil deteksi objek pada halaman web
-                // let resultText = data.prediction;
-                // resultElement.innerText = resultText;
 
                 if (data.prediction == 'nanas_matang') {
                     resultElement.innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Buah Nanas Matang</div>';
@@ -609,7 +645,7 @@
                         resultDiv.append(`
                             <div class="alert alert-success alert-dismissible fade show">
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-                                <img height="150px" width="150px" src="{{ asset('images/buah/') }}/${gambar}" alt="">
+                                <img height="200px" width="200px" src="{{ asset('images/buah/') }}/${gambar}" alt="">
                                 <br><br>
                                 <li>Gambar Yang Anda Upload Merupakan Buah Nanas Matang</li>
                             </div>
@@ -618,7 +654,7 @@
                         resultDiv.append(`
                             <div class="alert alert-warning alert-dismissible fade show">
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-                                <img height="150px" width="150px" src="{{ asset('images/buah/') }}/${gambar}" alt="">
+                                <img height="200px" width="200px" src="{{ asset('images/buah/') }}/${gambar}" alt="">
                                 <br><br>
                                 <li>Gambar Yang Anda Upload Merupakan Buah Nanas Mentah</li>
                             </div>
@@ -627,12 +663,19 @@
                         resultDiv.append(`
                             <div class="alert alert-danger alert-dismissible fade show">
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-                                <img height="150px" width="150px" src="{{ asset('images/buah/') }}/${gambar}" alt="">
+                                <img height="200px" width="200px" src="{{ asset('images/buah/') }}/${gambar}" alt="">
                                 <br><br>
                                 <li>Gambar Yang Anda Upload Bukan Buah Nanas</li>
                             </div>
                         `);
                     }
+
+                    $('#predictForm').hide();
+
+                    $('.alert .close').on('click', function() {
+                        $('#predictForm').show();
+                    });
+
                 }
                 , error: function(xhr, status, error) {
                     console.error(xhr.responseText);
