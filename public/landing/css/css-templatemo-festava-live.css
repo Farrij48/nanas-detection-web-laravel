@@ -771,6 +771,7 @@ strong {
     line-height: normal;
     margin-right: 10px;
     margin-bottom: 10px;
+    color: var(--dark-color);
 }
 
 .pricing-tag {

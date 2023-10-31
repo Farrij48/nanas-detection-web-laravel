@@ -595,6 +595,8 @@
                     resultElement.innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Buah Nanas Matang</div>';
                 } else if (data.prediction == 'nanas_mentah') {
                     resultElement.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Buah Nanas Mentah</div>';
+                } else if (data.prediction == 'bukan_nanas') {
+                    resultElement.innerHTML = '<div class="alert alert-warning alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Bukan Buah Nanas</div>';
                 } else {
                     resultElement.innerHTML = '<div class="alert alert-warning alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Tidak Ada Object Terdeteksi </div>';
                 }
@@ -659,7 +661,7 @@
                                 <li>Gambar Yang Anda Upload Merupakan Buah Nanas Mentah</li>
                             </div>
                         `);
-                    } else if (hasil === 'tidak_diketahui') {
+                    } else {
                         resultDiv.append(`
                             <div class="alert alert-danger alert-dismissible fade show">
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
