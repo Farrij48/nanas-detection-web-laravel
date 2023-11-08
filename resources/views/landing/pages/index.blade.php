@@ -403,14 +403,35 @@
                     </nav>
                     <div class="tab-content shadow-lg mt-5" id="nav-tabContent">
                         <div class="tab-pane fade" id="nav-ContactMap" role="tabpanel" aria-labelledby="nav-ContactMap-tab">
-                            <div class="text-center alignment-center">
+                            {{-- <div class="text-center alignment-center">
                                 <button class="btn custom-btn mb-3" id="toggleButton">Toggle Live Detection</button>
                                 <div class="alignment-center text-center">
                                     <video id="video" class="img-fluid" autoplay></video>
                                     <canvas id="canvas" class="img-fluid" style="display: none;"></canvas>
                                     <div class="result mt-3" id="result"></div>
                                 </div>
+                            </div> --}}
+
+                            <div class="text-center alignment-center">
+                                <button class="btn custom-btn mb-3" id="toggleButton">Toggle Live Detection</button>
+                                <select class="form-select mb-3" id="cameraSelect"></select>
+                                <div class="alignment-center text-center">
+                                    <video id="video" class="img-fluid" autoplay></video>
+                                    <canvas id="canvas" class="img-fluid" style="display: none;"></canvas>
+                                    <div class="result mt-3" id="result"></div>
+                                </div>
                             </div>
+
+                            {{-- <div class="text-center alignment-center">
+                                <button class="btn custom-btn mb-3" id="toggleButton">Toggle Live Detection</button>
+                                <select id="cameraSelect"></select>
+                                <div class="alignment-center text-center">
+                                    <video id="video" class="img-fluid" autoplay></video>
+                                    <canvas id="canvas" class="img-fluid" style="display: none;"></canvas>
+                                    <div class="result mt-3" id="result"></div>
+                                </div>
+                            </div> --}}
+
                         </div>
                         <div class="tab-pane fade active show" id="nav-ContactForm" role="tabpanel" aria-labelledby="nav-ContactForm-tab">
 
@@ -435,6 +456,23 @@
                                         <input type="file" id="fileInput" name="image" style="display:none" />
 
                                     </div>
+                                    @if($errors->any())
+                                    <div class="alert alert-danger alert-dismissible fade show">
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
+                                        </button>
+
+
+                                        <?php
+
+                                                $nomer = 1;
+
+                                                ?>
+
+                                        @foreach($errors->all() as $error)
+                                        <li>{{ $nomer++ }}. {{ $error }}</li>
+                                        @endforeach
+                                    </div>
+                                    @endif
                                 </form>
 
                                 <div class="text-center">
@@ -490,23 +528,6 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        @if($errors->any())
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
-                            </button>
-
-
-                            <?php
-
-                                    $nomer = 1;
-
-                                    ?>
-
-                            @foreach($errors->all() as $error)
-                            <li>{{ $nomer++ }}. {{ $error }}</li>
-                            @endforeach
-                        </div>
-                        @endif
                         {{-- <form id="predictForm" class="custom-form ticket-form" enctype="multipart/form-data">
                             @csrf
                             <div class="ticket-form-body">
@@ -539,35 +560,47 @@
 <script>
     const videoElement = document.getElementById('video');
     const canvasElement = document.getElementById('canvas');
-    const canvasContext = canvasElement.getContext('2d');
     const resultElement = document.getElementById('result');
     const toggleButton = document.getElementById('toggleButton');
-
+    const cameraSelect = document.getElementById('cameraSelect');
+    let mediaStream = null;
     let isLiveDetectionActive = false;
-    let mediaStream = null; // Menyimpan objek mediaStream untuk digunakan saat perlu berhenti
+
     resultElement.style.display = 'none';
+
+    async function getCameraDevices() {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        return devices.filter(device => device.kind === 'videoinput');
+    }
+
+    async function setupCamera(cameraId) {
+        const constraints = {
+            video: {
+                deviceId: cameraId
+                , facingMode: 'environment'
+            }
+        };
+        mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+        videoElement.srcObject = mediaStream;
+    }
 
     async function toggleLiveDetection() {
         try {
             if (isLiveDetectionActive) {
                 if (mediaStream) {
-                    mediaStream.getTracks().forEach(track => track.stop()); // Menghentikan semua track video
+                    mediaStream.getTracks().forEach(track => track.stop());
                 }
-                videoElement.srcObject = null; // Menghentikan tampilan video
-
-                // menyembunyikan canvas dan result
+                videoElement.srcObject = null;
                 resultElement.style.display = 'none';
-
-
             } else {
-                mediaStream = await navigator.mediaDevices.getUserMedia({
-                    video: true
-                });
-                videoElement.srcObject = mediaStream;
-
-                // menampilkan canvas dan result
-                resultElement.style.display = 'block';
-
+                const cameras = await getCameraDevices();
+                if (cameras.length > 0) {
+                    await setupCamera(cameras[0].deviceId);
+                    videoElement.srcObject = mediaStream;
+                    resultElement.style.display = 'block';
+                } else {
+                    console.error('No cameras available.');
+                }
             }
             isLiveDetectionActive = !isLiveDetectionActive;
         } catch (error) {
@@ -577,20 +610,39 @@
 
     toggleButton.addEventListener('click', toggleLiveDetection);
 
+    cameraSelect.addEventListener('change', async (event) => {
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+        }
+        await setupCamera(event.target.value);
+        videoElement.srcObject = mediaStream;
+    });
+
+    async function populateCameraList() {
+        const cameras = await getCameraDevices();
+        cameras.forEach(camera => {
+            const option = document.createElement('option');
+            option.value = camera.deviceId;
+            option.text = camera.label || `Camera ${camera.deviceId}`;
+            cameraSelect.appendChild(option);
+        });
+    }
+
+    populateCameraList().catch(console.error);
 
     function captureAndSendFrame() {
+        const canvasContext = canvasElement.getContext('2d');
         canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
         const imageData = canvasContext.getImageData(0, 0, canvasElement.width, canvasElement.height);
         const data = new FormData();
         data.append('image', dataURItoBlob(canvasElement.toDataURL()));
 
-        fetch('http://localhost:5000/predict', {
+        fetch('http://127.0.0.1:5000/predict', {
                 method: 'POST'
                 , body: data
             })
             .then(response => response.json())
             .then(data => {
-
                 if (data.prediction == 'nanas_matang') {
                     resultElement.innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Buah Nanas Matang</div>';
                 } else if (data.prediction == 'nanas_mentah') {
@@ -600,7 +652,6 @@
                 } else {
                     resultElement.innerHTML = '<div class="alert alert-warning alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Tidak Ada Object Terdeteksi </div>';
                 }
-
             })
             .catch(error => {
                 console.error('Error sending frame to API: ', error);
@@ -621,6 +672,90 @@
     }
 
     setInterval(captureAndSendFrame, 1000);
+    // const videoElement = document.getElementById('video');
+    // const canvasElement = document.getElementById('canvas');
+    // const canvasContext = canvasElement.getContext('2d');
+    // const resultElement = document.getElementById('result');
+    // const toggleButton = document.getElementById('toggleButton');
+
+    // let isLiveDetectionActive = false;
+    // let mediaStream = null; // Menyimpan objek mediaStream untuk digunakan saat perlu berhenti
+    // resultElement.style.display = 'none';
+
+    // async function toggleLiveDetection() {
+    //     try {
+    //         if (isLiveDetectionActive) {
+    //             if (mediaStream) {
+    //                 mediaStream.getTracks().forEach(track => track.stop()); // Menghentikan semua track video
+    //             }
+    //             videoElement.srcObject = null; // Menghentikan tampilan video
+
+    //             // menyembunyikan canvas dan result
+    //             resultElement.style.display = 'none';
+
+
+    //         } else {
+    //             mediaStream = await navigator.mediaDevices.getUserMedia({
+    //                 video: true
+    //             });
+    //             videoElement.srcObject = mediaStream;
+
+    //             // menampilkan canvas dan result
+    //             resultElement.style.display = 'block';
+
+    //         }
+    //         isLiveDetectionActive = !isLiveDetectionActive;
+    //     } catch (error) {
+    //         console.error('Error accessing the camera: ', error);
+    //     }
+    // }
+
+    // toggleButton.addEventListener('click', toggleLiveDetection);
+
+
+    // function captureAndSendFrame() {
+    //     canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+    //     const imageData = canvasContext.getImageData(0, 0, canvasElement.width, canvasElement.height);
+    //     const data = new FormData();
+    //     data.append('image', dataURItoBlob(canvasElement.toDataURL()));
+
+    //     fetch('http://localhost:5000/predict', {
+    //             method: 'POST'
+    //             , body: data
+    //         })
+    //         .then(response => response.json())
+    //         .then(data => {
+
+    //             if (data.prediction == 'nanas_matang') {
+    //                 resultElement.innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Buah Nanas Matang</div>';
+    //             } else if (data.prediction == 'nanas_mentah') {
+    //                 resultElement.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Buah Nanas Mentah</div>';
+    //             } else if (data.prediction == 'bukan_nanas') {
+    //                 resultElement.innerHTML = '<div class="alert alert-warning alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Bukan Buah Nanas</div>';
+    //             } else {
+    //                 resultElement.innerHTML = '<div class="alert alert-warning alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Tidak Ada Object Terdeteksi </div>';
+    //             }
+
+    //         })
+    //         .catch(error => {
+    //             console.error('Error sending frame to API: ', error);
+    //         });
+    // }
+
+    // function dataURItoBlob(dataURI) {
+    //     const byteString = atob(dataURI.split(',')[1]);
+    //     const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+    //     const ab = new ArrayBuffer(byteString.length);
+    //     const ia = new Uint8Array(ab);
+    //     for (let i = 0; i < byteString.length; i++) {
+    //         ia[i] = byteString.charCodeAt(i);
+    //     }
+    //     return new Blob([ab], {
+    //         type: mimeString
+    //     });
+    // }
+
+    // setInterval(captureAndSendFrame, 1000);
 
 </script>
 
