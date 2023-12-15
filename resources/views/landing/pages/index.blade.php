@@ -598,6 +598,7 @@
                     await setupCamera(cameras[0].deviceId);
                     videoElement.srcObject = mediaStream;
                     resultElement.style.display = 'block';
+
                 } else {
                     console.error('No cameras available.');
                 }
@@ -672,90 +673,6 @@
     }
 
     setInterval(captureAndSendFrame, 1000);
-    // const videoElement = document.getElementById('video');
-    // const canvasElement = document.getElementById('canvas');
-    // const canvasContext = canvasElement.getContext('2d');
-    // const resultElement = document.getElementById('result');
-    // const toggleButton = document.getElementById('toggleButton');
-
-    // let isLiveDetectionActive = false;
-    // let mediaStream = null; // Menyimpan objek mediaStream untuk digunakan saat perlu berhenti
-    // resultElement.style.display = 'none';
-
-    // async function toggleLiveDetection() {
-    //     try {
-    //         if (isLiveDetectionActive) {
-    //             if (mediaStream) {
-    //                 mediaStream.getTracks().forEach(track => track.stop()); // Menghentikan semua track video
-    //             }
-    //             videoElement.srcObject = null; // Menghentikan tampilan video
-
-    //             // menyembunyikan canvas dan result
-    //             resultElement.style.display = 'none';
-
-
-    //         } else {
-    //             mediaStream = await navigator.mediaDevices.getUserMedia({
-    //                 video: true
-    //             });
-    //             videoElement.srcObject = mediaStream;
-
-    //             // menampilkan canvas dan result
-    //             resultElement.style.display = 'block';
-
-    //         }
-    //         isLiveDetectionActive = !isLiveDetectionActive;
-    //     } catch (error) {
-    //         console.error('Error accessing the camera: ', error);
-    //     }
-    // }
-
-    // toggleButton.addEventListener('click', toggleLiveDetection);
-
-
-    // function captureAndSendFrame() {
-    //     canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
-    //     const imageData = canvasContext.getImageData(0, 0, canvasElement.width, canvasElement.height);
-    //     const data = new FormData();
-    //     data.append('image', dataURItoBlob(canvasElement.toDataURL()));
-
-    //     fetch('http://localhost:5000/predict', {
-    //             method: 'POST'
-    //             , body: data
-    //         })
-    //         .then(response => response.json())
-    //         .then(data => {
-
-    //             if (data.prediction == 'nanas_matang') {
-    //                 resultElement.innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Buah Nanas Matang</div>';
-    //             } else if (data.prediction == 'nanas_mentah') {
-    //                 resultElement.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Buah Nanas Mentah</div>';
-    //             } else if (data.prediction == 'bukan_nanas') {
-    //                 resultElement.innerHTML = '<div class="alert alert-warning alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Bukan Buah Nanas</div>';
-    //             } else {
-    //                 resultElement.innerHTML = '<div class="alert alert-warning alert-dismissible fade show" role="alert"><strong>Hasil Deteksi : </strong> Tidak Ada Object Terdeteksi </div>';
-    //             }
-
-    //         })
-    //         .catch(error => {
-    //             console.error('Error sending frame to API: ', error);
-    //         });
-    // }
-
-    // function dataURItoBlob(dataURI) {
-    //     const byteString = atob(dataURI.split(',')[1]);
-    //     const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-    //     const ab = new ArrayBuffer(byteString.length);
-    //     const ia = new Uint8Array(ab);
-    //     for (let i = 0; i < byteString.length; i++) {
-    //         ia[i] = byteString.charCodeAt(i);
-    //     }
-    //     return new Blob([ab], {
-    //         type: mimeString
-    //     });
-    // }
-
-    // setInterval(captureAndSendFrame, 1000);
 
 </script>
 
@@ -784,7 +701,7 @@
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
                                 <img height="200px" width="200px" src="{{ asset('images/buah/') }}/${gambar}" alt="">
                                 <br><br>
-                                <li>Gambar Yang Anda Upload Merupakan Buah Nanas Matang</li>
+                                <li>Buah Nanas Matang</li>
                             </div>
                         `);
                     } else if (hasil === 'nanas_mentah') {
@@ -793,7 +710,7 @@
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
                                 <img height="200px" width="200px" src="{{ asset('images/buah/') }}/${gambar}" alt="">
                                 <br><br>
-                                <li>Gambar Yang Anda Upload Merupakan Buah Nanas Mentah</li>
+                                <li>Buah Nanas Mentah</li>
                             </div>
                         `);
                     } else {
@@ -802,7 +719,7 @@
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
                                 <img height="200px" width="200px" src="{{ asset('images/buah/') }}/${gambar}" alt="">
                                 <br><br>
-                                <li>Gambar Yang Anda Upload Bukan Buah Nanas</li>
+                                <li>Bukan Buah Nanas</li>
                             </div>
                         `);
                     }
